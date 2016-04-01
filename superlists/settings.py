@@ -25,7 +25,7 @@ SECRET_KEY = 'b7ds4&i3kqcdn-c=ke1(opy798#hv&t$r47rr$&jcfx+kwqvcu'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["superlists.eskinner.org"]
 
 
 # Application definition
