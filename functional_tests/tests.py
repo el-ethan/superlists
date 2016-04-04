@@ -1,11 +1,12 @@
 import sys
+from unittest import skip
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-class NewVisitorTest(StaticLiveServerTestCase):
+class FunctionalTest(StaticLiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -28,32 +29,13 @@ class NewVisitorTest(StaticLiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def test_layout_and_styling(self):
-        # User goes to home page
-        self.browser.get(self.server_url)
-        self.browser.set_window_size(1024, 768)
-
-        # User notices input box is nicely centered
-        inputbox = self.browser.find_element_by_id('id_new_item')
-        self.assertAlmostEqual(
-            inputbox.location['x'] + inputbox.size['width'] / 2,
-            512,
-            delta=5
-        )
-
-        # User starts new list and sees the input is centered there too
-        inputbox.send_keys('testing\n')
-        inputbox = self.browser.find_element_by_id('id_new_item')
-        self.assertAlmostEqual(
-            inputbox.location['x'] + inputbox.size['width'] / 2,
-            512,
-            delta=5
-        )
-
     def check_for_row_in_list_table(self, row_text):
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
+
+
+class NewVisitorTest(FunctionalTest):
 
     def test_can_start_a_list_and_retrieve_later(self):
         self.browser.get(self.server_url)
@@ -101,3 +83,37 @@ class NewVisitorTest(StaticLiveServerTestCase):
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Buy peacock feathers', page_text)
         self.assertIn('Buy milk', page_text)
+
+
+class LayoutAndStylingTest(FunctionalTest):
+
+    def test_layout_and_styling(self):
+        # User goes to home page
+        self.browser.get(self.server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # User notices input box is nicely centered
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=5
+        )
+
+        # User starts new list and sees the input is centered there too
+        inputbox.send_keys('testing\n')
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=5
+        )
+
+
+class ItemValidationTest(FunctionalTest):
+
+    @skip
+    def test_cannot_add_empty_list_item(self):
+        # User accidentally hits enter without entering task text
+        # User is warned and given the chance to enter text
+        self.fail('Write test!')
